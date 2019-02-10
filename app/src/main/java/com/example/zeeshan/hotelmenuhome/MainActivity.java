@@ -48,10 +48,40 @@ public class MainActivity extends AppCompatActivity {
         ppview = (Button)findViewById(R.id.ppview);
         bcview = (Button)findViewById(R.id.bcview);
 
+        pmview.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(getApplicationContext(),ViewItem.class);
+                i.putExtra("itemname","paneer_masala");
+                startActivity(i);
+            }
+        });
+
         ctview.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i = new Intent(getApplicationContext(),ViewCt.class);
+                Intent i = new Intent(getApplicationContext(),ViewItem.class);
+                i.putExtra("itemname","chicken_tandoori");
+                startActivity(i);
+                finish();
+            }
+        });
+
+        bcview.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(getApplicationContext(),ViewItem.class);
+                i.putExtra("itemname","butter_chicken");
+                startActivity(i);
+                finish();
+            }
+        });
+
+        ppview.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(getApplicationContext(),ViewItem.class);
+                i.putExtra("itemname","palak_paneer");
                 startActivity(i);
                 finish();
             }

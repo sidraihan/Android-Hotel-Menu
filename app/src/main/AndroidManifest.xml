@@ -17,7 +17,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".DisplayOrder" />
-        <activity android:name=".ViewCt"></activity>
+        <activity android:name=".ViewCt" />
+        <activity android:name=".ViewItem"></activity>
     </application>
 
 </manifest>
