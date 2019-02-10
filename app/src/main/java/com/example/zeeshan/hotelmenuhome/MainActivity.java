@@ -1,6 +1,5 @@
 package com.example.zeeshan.hotelmenuhome;
 
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -9,16 +8,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.EditText;
-import android.widget.Toast;
 import android.content.Intent;
-
-import com.example.zeeshan.hotelmenuhome.R;
+import android.widget.Toast;
 
 
 public class MainActivity extends AppCompatActivity {
     CheckBox pm,bc,ct,pp;
-    Button buttonOrder;
+    Button buttonOrder,ctview,ppview,pmview,bcview;
 
     public boolean onCreateOptionsMenu(Menu menu){
         MenuInflater menuInflater = getMenuInflater();
@@ -46,6 +42,56 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        ctview = (Button)findViewById(R.id.ctview);
+        pmview = (Button)findViewById(R.id.pmview);
+        ppview = (Button)findViewById(R.id.ppview);
+        bcview = (Button)findViewById(R.id.bcview);
+
+        ctview.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(getApplicationContext(),ViewCt.class);
+                startActivity(i);
+                finish();
+            }
+        });
+
+        ctview.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                Toast.makeText(MainActivity.this, "Price: Rs.320",
+                        Toast.LENGTH_LONG).show();
+                return false;
+            }
+        });
+
+        pmview.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                Toast.makeText(MainActivity.this, "Price: Rs.100",
+                        Toast.LENGTH_LONG).show();
+                return false;
+            }
+        });
+
+        ppview.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                Toast.makeText(MainActivity.this, "Price: Rs.120",
+                        Toast.LENGTH_LONG).show();
+                return false;
+            }
+        });
+
+        bcview.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                Toast.makeText(MainActivity.this, "Price: Rs.150",
+                        Toast.LENGTH_LONG).show();
+                return false;
+            }
+        });
     }
 
     public void to_display_order(View view)
