@@ -1,7 +1,10 @@
 package com.example.zeeshan.hotelmenuhome;
 
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -43,6 +46,76 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        try
+        {
+            SQLiteDatabase hotelDatabase = this.openOrCreateDatabase("Hotel",MODE_PRIVATE,null);
+           // hotelDatabase.execSQL("DROP TABLE menuitems");
+            /*hotelDatabase.execSQL("CREATE TABLE IF NOT EXISTS menuitems(name VARCHAR, nick VARCHAR, price INT(4), description VARCHAR)");
+            hotelDatabase.execSQL("INSERT INTO menuitems (name,nick, price, description) VALUES ('Chicken Tandoori','chicken_tandoori', 320, 'Prepared on tandoor. This is a traditional Indian dish.')");
+            hotelDatabase.execSQL("INSERT INTO menuitems (name,nick, price, description) VALUES ('Paneer Masala','paneer_masala', 100, 'Vegetarian dish having a typical taste of Indian spices.')");
+            hotelDatabase.execSQL("INSERT INTO menuitems (name,nick, price, description) VALUES ('Palak Paneer','palak_paneer', 120, 'Simple dish containing spinach and green chutney masala.')");
+            hotelDatabase.execSQL("INSERT INTO menuitems (name,nick, price, description) VALUES ('Butter Chicken','butter_chicken', 150, 'Indian non vegetarian dish little spicy and buttery in nature')");
+*/
+
+
+            Cursor c = hotelDatabase.rawQuery("SELECT * FROM menuitems",null);
+            int nameIndex = c.getColumnIndex("name");
+            int priceIndex = c.getColumnIndex("price");
+            int nickIndex = c.getColumnIndex("nick");
+            int descriptionIndex = c.getColumnIndex("description");
+
+            c.moveToFirst();
+
+            while(c != null){
+
+                Log.i("name",c.getString(nameIndex));
+                Log.i("nick",c.getString(nickIndex));
+                Log.i("price",Integer.toString(c.getInt(priceIndex)));
+                Log.i("description",c.getString(descriptionIndex));
+                c.moveToNext();
+
+
+            }
+
+
+
+        }
+
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+/*
+        try
+        {
+
+            SQLiteDatabase hotelDatabase = this.openOrCreateDatabase("Hotel",MODE_PRIVATE,null);
+            hotelDatabase.execSQL("CREATE TABLE IF NOT EXISTS menuitems (name VARCHAR, price INT(4),description VARCHAR) ");
+            hotelDatabase.execSQL("INSERT INTO menuitems (name, price, description) VALUES ('Butter Chicken', 150, 'Indian dish made a little spicy and buttery.')");
+
+            Cursor c = hotelDatabase.rawQuery("SELECT * FROM menuitems",null);
+            int nameIndex = c.getColumnIndex("name");
+            int priceIndex = c.getColumnIndex("price");
+            int descriptionIndex = c.getColumnIndex("description");
+
+            c.moveToFirst();
+
+            while(c != null){
+
+                Log.i("name",c.getString(nameIndex));
+                Log.i("price",Integer.toString(c.getInt(priceIndex)));
+                Log.i("description",c.getString(descriptionIndex));
+                c.moveToNext();
+
+
+            }
+  }
+
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+*/
         ctview = (Button)findViewById(R.id.ctview);
         pmview = (Button)findViewById(R.id.pmview);
         ppview = (Button)findViewById(R.id.ppview);
@@ -126,14 +199,12 @@ public class MainActivity extends AppCompatActivity {
 
     public void to_display_order(View view)
     {
-        //Getting instance of CheckBoxes and Button from the activty_main.xml file
         pm=(CheckBox)findViewById(R.id.pm);
         bc=(CheckBox)findViewById(R.id.bc);
         ct=(CheckBox)findViewById(R.id.ct);
         pp=(CheckBox)findViewById(R.id.pp);
         buttonOrder=(Button)findViewById(R.id.button);
 
-        //Applying the Listener on the Button click
 
         int totalamount=0;
         StringBuilder result=new StringBuilder();
@@ -156,7 +227,6 @@ public class MainActivity extends AppCompatActivity {
             totalamount+=320;
         }
         result.append("\n\nTotal:Rs."+totalamount);
-        //Displaying the message on the toast
 
         Intent intent = new Intent(getApplicationContext(),DisplayOrder.class);
         intent.putExtra("order",result.toString());

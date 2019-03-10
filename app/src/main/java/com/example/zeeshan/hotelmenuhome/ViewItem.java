@@ -1,8 +1,11 @@
 package com.example.zeeshan.hotelmenuhome;
 
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -12,34 +15,53 @@ public class ViewItem extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_item);
+        try {
 
-        String description="";
-        Intent intent = getIntent();
-        String itemname = intent.getStringExtra("itemname");
-        ImageView imageView = (ImageView)findViewById(R.id.itemimage);
-        int imageresource = getResources().getIdentifier("@drawable/"+itemname,null,this.getPackageName());
-        imageView.setImageResource(imageresource);
 
-        if (itemname.equals("paneer_masala")){
-           description = "Paneer Masala is a traditional Indian dish. Also known as Paneer Tikka Masala. It is spicy in taste.Price Rs.100";
+            SQLiteDatabase hotelDatabase = this.openOrCreateDatabase("Hotel", MODE_PRIVATE, null);
+
+            Cursor c = hotelDatabase.rawQuery("SELECT * FROM menuitems", null);
+            int nameIndex = c.getColumnIndex("name");
+            int priceIndex = c.getColumnIndex("price");
+            int descriptionIndex = c.getColumnIndex("description");
+            int nickIndex = c.getColumnIndex("nick");
+
+            c.moveToFirst();
+
+            String price="";
+            String description = "";
+            String name = "";
+            Intent intent = getIntent();
+            String itemname = intent.getStringExtra("itemname");
+            ImageView imageView = (ImageView) findViewById(R.id.itemimage);
+            int imageresource = getResources().getIdentifier("@drawable/" + itemname, null, this.getPackageName());
+            imageView.setImageResource(imageresource);
+
+            while(true)
+            {
+
+                if((c.getString(nickIndex)).equals(itemname))
+                {
+                    description=c.getString(descriptionIndex);
+                    name = c.getString(nameIndex);
+                    price=Integer.toString(c.getInt(priceIndex));
+                    break;
+                }
+                c.moveToNext();
+            }
+
+            TextView textView = (TextView) findViewById(R.id.itemdescription);
+            TextView nametext = (TextView)findViewById(R.id.item);
+            TextView pricetext = (TextView)findViewById(R.id.itemprice);
+            nametext.setText(name);
+            textView.setText(description);
+            pricetext.setText("Price:Rs."+price);
+
+        }
+        catch(Exception e)
+            {
+                e.printStackTrace();
+            }
         }
 
-        else if (itemname.equals("chicken_tandoori"))
-        {
-            description= "Chicken Tandoori is a non-vegetarian dish. Famous for its spicy nature. Price Rs.320";
-        }
-
-        else if (itemname.equals("butter_chicken"))
-        {
-            description="Butter chicken or murgh makhani is a dish, originating from the Indian subcontinent, of chicken in a mildly spiced tomato sauce.";
-        }
-
-        else if (itemname.equals("palak_paneer"))
-        {
-            description="Palak paneer is a vegetarian dish originating from the Indian subcontinent, consisting of paneer in a thick paste made from puréed spinach and seasoned with ginger, garlic, garam masala, and other spices. Palak paneer may be called saag paneer in some restaurants in the United States and Canada.";
-        }
-
-        TextView textView = (TextView)findViewById(R.id.itemdescription);
-        textView.setText(description);
-    }
 }
