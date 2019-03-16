@@ -204,47 +204,65 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public void to_display_order(View view)
-    {
-        pm=(CheckBox)findViewById(R.id.pm);
-        bc=(CheckBox)findViewById(R.id.bc);
-        ct=(CheckBox)findViewById(R.id.ct);
-        pp=(CheckBox)findViewById(R.id.pp);
-        buttonOrder=(Button)findViewById(R.id.button);
+    public void to_display_order(View view) {
+        try {
 
 
-        int totalamount=0;
-        StringBuilder result=new StringBuilder();
-        result.append("\nYou have ordered:");
-        if(pm.isChecked()){
-            result.append("\n\nPaneer Masala - Rs.100");
-            totalamount+=100;
+            SQLiteDatabase hotelDatabase = this.openOrCreateDatabase("Hotel", MODE_PRIVATE, null);
+
+            Cursor c = hotelDatabase.rawQuery("SELECT * FROM menuitems", null);
+            int nameIndex = c.getColumnIndex("name");
+            int priceIndex = c.getColumnIndex("price");
+            int descriptionIndex = c.getColumnIndex("description");
+            int nickIndex = c.getColumnIndex("nick");
+
+            c.moveToFirst();
+
+
+            pm = (CheckBox) findViewById(R.id.pm);
+            bc = (CheckBox) findViewById(R.id.bc);
+            ct = (CheckBox) findViewById(R.id.ct);
+            pp = (CheckBox) findViewById(R.id.pp);
+            buttonOrder = (Button) findViewById(R.id.button);
+
+
+            int totalamount = 0;
+            StringBuilder result = new StringBuilder();
+            result.append("\nYou have ordered:");
+            if (pm.isChecked()) {
+                while(true) {
+                    if ((c.getString(nameIndex)).equals("Paneer Masala")) {
+                        result.append("\n\n" + c.getString(nameIndex)+" - Rs."+c.getString(priceIndex));
+                        totalamount += Integer.parseInt(c.getString(priceIndex));
+                        break;
+                    }
+                    c.moveToNext();
+                }
+            }
+            if (bc.isChecked()) {
+                result.append("\n\nButter Chicken - Rs.150");
+                totalamount += 150;
+            }
+            if (pp.isChecked()) {
+                result.append("\n\nPalak Paneer - Rs.120");
+                totalamount += 120;
+            }
+
+            if (ct.isChecked()) {
+                result.append("\n\nChicken Tandoori - Rs.320");
+                totalamount += 320;
+            }
+            result.append("\n\nTotal:Rs." + totalamount);
+
+            Intent intent = new Intent(getApplicationContext(), DisplayOrder.class);
+            intent.putExtra("order", result.toString());
+            startActivity(intent);
+            //finish();
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        if(bc.isChecked()){
-            result.append("\n\nButter Chicken - Rs.150");
-            totalamount+=150;
-        }
-        if(pp.isChecked()){
-            result.append("\n\nPalak Paneer - Rs.120");
-            totalamount+=120;
-        }
-
-        if(ct.isChecked()){
-            result.append("\n\nChicken Tandoori - Rs.320");
-            totalamount+=320;
-        }
-        result.append("\n\nTotal:Rs."+totalamount);
-
-        Intent intent = new Intent(getApplicationContext(),DisplayOrder.class);
-        intent.putExtra("order",result.toString());
-        startActivity(intent);
-        //finish();
-
-
-
 
     }
-
-
 
 }
