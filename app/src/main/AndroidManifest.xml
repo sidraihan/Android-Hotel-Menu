@@ -16,9 +16,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".DisplayOrder" />
-        <activity android:name=".ViewCt" />
-        <activity android:name=".ViewItem"></activity>
+        <activity
+            android:name=".DisplayOrder"
+            android:theme="@style/CustomFontStyleRed" />
+        <activity android:name=".ViewItem" />
+        <activity android:name=".Payment" />
+        <activity android:name=".Review"></activity>
     </application>
 
 </manifest>

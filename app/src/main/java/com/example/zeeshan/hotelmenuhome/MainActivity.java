@@ -2,6 +2,7 @@ package com.example.zeeshan.hotelmenuhome;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -18,6 +19,7 @@ import android.widget.Toast;
 public class MainActivity extends AppCompatActivity {
     CheckBox pm,bc,ct,pp;
     Button buttonOrder,ctview,ppview,pmview,bcview;
+    AlertDialog.Builder help;
 
     public boolean onCreateOptionsMenu(Menu menu){
         MenuInflater menuInflater = getMenuInflater();
@@ -35,9 +37,14 @@ public class MainActivity extends AppCompatActivity {
         {
             return true;
         }
-        else if(item.getItemId()== R.id.help)
+        else if(item.getItemId()== R.id.help) {
+            help = new AlertDialog.Builder(this);
+            help.setMessage("This application is a simple UI app used to order the food you want to eat!Just select what you want to eat and click order and we will provide you with delicious food!");
+            AlertDialog alert = help.create();
+            alert.setTitle("Help");
+            alert.show();
             return true;
-
+        }
         else
             return false;
     }
