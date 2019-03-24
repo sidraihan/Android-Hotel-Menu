@@ -1,6 +1,7 @@
 package com.example.zeeshan.hotelmenuhome;
 
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -13,13 +14,23 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.content.Intent;
+import android.widget.LinearLayout;
 import android.widget.Toast;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+
+//import static android.icu.text.MessagePattern.ArgType.SELECT;
 
 
 public class MainActivity extends AppCompatActivity {
-    CheckBox pm,bc,ct,pp;
+    CheckBox pm,bc,ct,pp,checkBox,ch;
     Button buttonOrder,ctview,ppview,pmview,bcview;
     AlertDialog.Builder help;
+    LinearLayout linearLayout;
+    View view2;
 
     public boolean onCreateOptionsMenu(Menu menu){
         MenuInflater menuInflater = getMenuInflater();
@@ -56,22 +67,58 @@ public class MainActivity extends AppCompatActivity {
         try
         {
             SQLiteDatabase hotelDatabase = this.openOrCreateDatabase("Hotel",MODE_PRIVATE,null);
-           // hotelDatabase.execSQL("DROP TABLE menuitems");
-            /*hotelDatabase.execSQL("CREATE TABLE IF NOT EXISTS menuitems(name VARCHAR, nick VARCHAR, price INT(4), description VARCHAR)");
+            //hotelDatabase.execSQL("DELETE FROM menuitems WHERE name='Chicken Tandoori'");
+            //hotelDatabase.execSQL("INSERT INTO menuitems (name,nick, price, description) VALUES ('Chicken Tandoori','chicken_tandoori', 320, 'Prepared on tandoor. This is a traditional Indian dish.')");
+
+            //hotelDatabase.execSQL("DROP TABLE menuitems");
+            //hotelDatabase.execSQL("CREATE TABLE IF NOT EXISTS orderitems(id INTEGER PRIMARY KEY AUTOINCREMENT,bill INT(5),menuitem_id INTEGER,FOREIGN KEY(menuitem_id) REFERENCES menuitems(id))");
+
+
+           /* hotelDatabase.execSQL("DROP TABLE menuitems");
+            hotelDatabase.execSQL("CREATE TABLE IF NOT EXISTS menuitems(id INTEGER PRIMARY KEY,name VARCHAR, nick VARCHAR, price INT(4), description VARCHAR)");
             hotelDatabase.execSQL("INSERT INTO menuitems (name,nick, price, description) VALUES ('Chicken Tandoori','chicken_tandoori', 320, 'Prepared on tandoor. This is a traditional Indian dish.')");
             hotelDatabase.execSQL("INSERT INTO menuitems (name,nick, price, description) VALUES ('Paneer Masala','paneer_masala', 100, 'Vegetarian dish having a typical taste of Indian spices.')");
             hotelDatabase.execSQL("INSERT INTO menuitems (name,nick, price, description) VALUES ('Palak Paneer','palak_paneer', 120, 'Simple dish containing spinach and green chutney masala.')");
             hotelDatabase.execSQL("INSERT INTO menuitems (name,nick, price, description) VALUES ('Butter Chicken','butter_chicken', 150, 'Indian non vegetarian dish little spicy and buttery in nature')");
 */
+            linearLayout = (LinearLayout)findViewById(R.id.linear);
+
+            ArrayList<String> al = new ArrayList<String>();
+
+           int numRows = hotelDatabase.rawQuery("SELECT id FROM menuitems", null).getCount();
+            Log.i("numRows",Integer.toString(numRows));
 
 
-            Cursor c = hotelDatabase.rawQuery("SELECT * FROM menuitems",null);
+
+
+
+            final Cursor c = hotelDatabase.rawQuery("SELECT * FROM menuitems",null);
+            final int idIndex = c.getColumnIndex("id");
             int nameIndex = c.getColumnIndex("name");
             int priceIndex = c.getColumnIndex("price");
             int nickIndex = c.getColumnIndex("nick");
             int descriptionIndex = c.getColumnIndex("description");
 
             c.moveToFirst();
+
+            for (int i =0;i<numRows;i++)
+            {
+                al.add(c.getString(nameIndex));
+                c.moveToNext();
+            }
+
+            c.moveToFirst();
+
+            for (int j=0;j<al.size();j++)
+            {
+                checkBox = new CheckBox(this);
+                checkBox.setId(Integer.parseInt(c.getString(idIndex)));
+                checkBox.setTag(c.getString(nickIndex));
+                checkBox.setText(al.get(j));
+                linearLayout.addView(checkBox);
+                c.moveToNext();
+            }
+
 
             while(c != null){
 
@@ -92,116 +139,7 @@ public class MainActivity extends AppCompatActivity {
         {
             e.printStackTrace();
         }
-/*
-        try
-        {
 
-            SQLiteDatabase hotelDatabase = this.openOrCreateDatabase("Hotel",MODE_PRIVATE,null);
-            hotelDatabase.execSQL("CREATE TABLE IF NOT EXISTS menuitems (name VARCHAR, price INT(4),description VARCHAR) ");
-            hotelDatabase.execSQL("INSERT INTO menuitems (name, price, description) VALUES ('Butter Chicken', 150, 'Indian dish made a little spicy and buttery.')");
-
-            Cursor c = hotelDatabase.rawQuery("SELECT * FROM menuitems",null);
-            int nameIndex = c.getColumnIndex("name");
-            int priceIndex = c.getColumnIndex("price");
-            int descriptionIndex = c.getColumnIndex("description");
-
-            c.moveToFirst();
-
-            while(c != null){
-
-                Log.i("name",c.getString(nameIndex));
-                Log.i("price",Integer.toString(c.getInt(priceIndex)));
-                Log.i("description",c.getString(descriptionIndex));
-                c.moveToNext();
-
-
-            }
-  }
-
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-*/
-        ctview = (Button)findViewById(R.id.ctview);
-        pmview = (Button)findViewById(R.id.pmview);
-        ppview = (Button)findViewById(R.id.ppview);
-        bcview = (Button)findViewById(R.id.bcview);
-
-        pmview.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent i = new Intent(getApplicationContext(),ViewItem.class);
-                i.putExtra("itemname","paneer_masala");
-                startActivity(i);
-            }
-        });
-
-        ctview.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent i = new Intent(getApplicationContext(),ViewItem.class);
-                i.putExtra("itemname","chicken_tandoori");
-                startActivity(i);
-                finish();
-            }
-        });
-
-        bcview.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent i = new Intent(getApplicationContext(),ViewItem.class);
-                i.putExtra("itemname","butter_chicken");
-                startActivity(i);
-                finish();
-            }
-        });
-
-        ppview.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent i = new Intent(getApplicationContext(),ViewItem.class);
-                i.putExtra("itemname","palak_paneer");
-                startActivity(i);
-                finish();
-            }
-        });
-
-        ctview.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                Toast.makeText(MainActivity.this, "Price: Rs.320",
-                        Toast.LENGTH_LONG).show();
-                return false;
-            }
-        });
-
-        pmview.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                Toast.makeText(MainActivity.this, "Price: Rs.100",
-                        Toast.LENGTH_LONG).show();
-                return false;
-            }
-        });
-
-        ppview.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                Toast.makeText(MainActivity.this, "Price: Rs.120",
-                        Toast.LENGTH_LONG).show();
-                return false;
-            }
-        });
-
-        bcview.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                Toast.makeText(MainActivity.this, "Price: Rs.150",
-                        Toast.LENGTH_LONG).show();
-                return false;
-            }
-        });
     }
 
     public void to_display_order(View view) {
@@ -209,55 +147,68 @@ public class MainActivity extends AppCompatActivity {
 
 
             SQLiteDatabase hotelDatabase = this.openOrCreateDatabase("Hotel", MODE_PRIVATE, null);
+           // hotelDatabase.execSQL("DROP TABLE orderitems");
+           // hotelDatabase.execSQL("CREATE TABLE IF NOT EXISTS orderitems(id INTEGER PRIMARY KEY,bill INT(5),menuitem_id INTEGER,FOREIGN KEY(menuitem_id) REFERENCES menuitems(id))");
+            //hotelDatabase.execSQL("INSERT INTO menuitems (name,nick, price, description) VALUES ('Chicken Tandoori','chicken_tandoori', 320, 'Prepared on tandoor. This is a traditional Indian dish.')");
+
+            hotelDatabase.execSQL("CREATE TABLE IF NOT EXISTS menu_order(id INTEGER PRIMARY KEY,item_id INTEGER,order_id INTEGER,FOREIGN KEY(item_id) REFERENCES menuitems(id),FOREIGN KEY(order_id) REFERENCES orderitems(id))");
 
             Cursor c = hotelDatabase.rawQuery("SELECT * FROM menuitems", null);
+            int idIndex = c.getColumnIndex("id");
             int nameIndex = c.getColumnIndex("name");
             int priceIndex = c.getColumnIndex("price");
             int descriptionIndex = c.getColumnIndex("description");
             int nickIndex = c.getColumnIndex("nick");
-
+            int numRows = hotelDatabase.rawQuery("SELECT id FROM menuitems", null).getCount();
             c.moveToFirst();
+            ArrayList<String> al = new ArrayList<>();
+            String[] items={};
+            int bill1=0;
+            int idorderIndex;
+            int billIndex;
+            int numRowsOrder;
 
 
-            pm = (CheckBox) findViewById(R.id.pm);
-            bc = (CheckBox) findViewById(R.id.bc);
-            ct = (CheckBox) findViewById(R.id.ct);
-            pp = (CheckBox) findViewById(R.id.pp);
-            buttonOrder = (Button) findViewById(R.id.button);
+
+            for (int i=0;i<numRows;i++)
+            {
+                view2 = (View) view.getParent().getParent();
+                ch = (CheckBox) view2.findViewWithTag(c.getString(nickIndex));
+
+                if (ch.isChecked()) {
+                    al.add(c.getString(nameIndex));
+                    bill1+=c.getInt(priceIndex);
+                    numRowsOrder = hotelDatabase.rawQuery("SELECT id FROM orderitems", null).getCount();
+                    numRowsOrder++;
+
+                    hotelDatabase.execSQL("INSERT INTO menu_order VALUES(null,"+c.getString(idIndex)+","+numRowsOrder+")");
+                    int numRowsJoin = hotelDatabase.rawQuery("SELECT id FROM orderitems", null).getCount();
 
 
-            int totalamount = 0;
-            StringBuilder result = new StringBuilder();
-            result.append("\nYou have ordered:");
-            if (pm.isChecked()) {
-                while(true) {
-                    if ((c.getString(nameIndex)).equals("Paneer Masala")) {
-                        result.append("\n\n" + c.getString(nameIndex)+" - Rs."+c.getString(priceIndex));
-                        totalamount += Integer.parseInt(c.getString(priceIndex));
-                        break;
-                    }
-                    c.moveToNext();
+                    Cursor c1 = hotelDatabase.rawQuery("SELECT * FROM menu_order", null);
+                    c1.moveToFirst();
+                    idorderIndex = c1.getColumnIndex("item_id");
+                    billIndex = c1.getColumnIndex("order_id");
+                    Log.i("item_id",Integer.toString(c1.getInt(idorderIndex)));
+                    Log.i("order_id",Integer.toString(c1.getInt(billIndex)));
+                    c1.moveToNext();
+
                 }
-            }
-            if (bc.isChecked()) {
-                result.append("\n\nButter Chicken - Rs.150");
-                totalamount += 150;
-            }
-            if (pp.isChecked()) {
-                result.append("\n\nPalak Paneer - Rs.120");
-                totalamount += 120;
+
+
+                c.moveToNext();
             }
 
-            if (ct.isChecked()) {
-                result.append("\n\nChicken Tandoori - Rs.320");
-                totalamount += 320;
-            }
-            result.append("\n\nTotal:Rs." + totalamount);
+           // hotelDatabase.execSQL("INSERT INTO orderitems (items) VALUES ("+items+")");
 
             Intent intent = new Intent(getApplicationContext(), DisplayOrder.class);
-            intent.putExtra("order", result.toString());
+            intent.putExtra("order",items);
+            intent.putExtra("bill",Integer.toString(bill1));
             startActivity(intent);
-            //finish();
+
+
+
+
 
         } catch (Exception e) {
             e.printStackTrace();

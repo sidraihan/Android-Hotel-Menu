@@ -17,10 +17,15 @@ public class ViewItem extends AppCompatActivity {
         setContentView(R.layout.activity_view_item);
         try {
 
+            Intent intent = getIntent();
+            int itemid = intent.getIntExtra("itemid", 0);
+           // String itemid = intent.getStringExtra("itemid");
 
             SQLiteDatabase hotelDatabase = this.openOrCreateDatabase("Hotel", MODE_PRIVATE, null);
 
-            Cursor c = hotelDatabase.rawQuery("SELECT * FROM menuitems", null);
+            //Cursor c = hotelDatabase.rawQuery("SELECT * FROM menuitems", null);
+            Cursor c = hotelDatabase.rawQuery("SELECT * FROM menuitems WHERE TRIM(id)="+itemid, null);
+            int idIndex = c.getColumnIndex("id");
             int nameIndex = c.getColumnIndex("name");
             int priceIndex = c.getColumnIndex("price");
             int descriptionIndex = c.getColumnIndex("description");
@@ -31,13 +36,12 @@ public class ViewItem extends AppCompatActivity {
             String price="";
             String description = "";
             String name = "";
-            Intent intent = getIntent();
-            String itemname = intent.getStringExtra("itemname");
+
             ImageView imageView = (ImageView) findViewById(R.id.itemimage);
-            int imageresource = getResources().getIdentifier("@drawable/" + itemname, null, this.getPackageName());
+            int imageresource = getResources().getIdentifier("@drawable/" + "a" + itemid, null, this.getPackageName());
             imageView.setImageResource(imageresource);
 
-            while(true)
+           /* while(true)
             {
 
                 if((c.getString(nickIndex)).equals(itemname))
@@ -48,7 +52,11 @@ public class ViewItem extends AppCompatActivity {
                     break;
                 }
                 c.moveToNext();
-            }
+            }*/
+
+            description=c.getString(descriptionIndex);
+            name = c.getString(nameIndex);
+            price=Integer.toString(c.getInt(priceIndex));
 
             TextView textView = (TextView) findViewById(R.id.itemdescription);
             TextView nametext = (TextView)findViewById(R.id.item);

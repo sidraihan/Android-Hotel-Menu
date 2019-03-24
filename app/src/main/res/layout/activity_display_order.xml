@@ -20,6 +20,11 @@
         android:layout_height="wrap_content"
         android:textAppearance="@style/TextAppearance.AppCompat" />
 
+    <TextView
+        android:id="@+id/bill"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
     <Button
         android:id="@+id/pay"
         android:layout_width="match_parent"
