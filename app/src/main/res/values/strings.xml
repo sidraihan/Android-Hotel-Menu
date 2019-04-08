@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Food Order!</string>
+    <string name="helpText">This application is a simple UI app used to order the food you want to eat!Just select what you want to eat and click order and we will provide you with delicious food!</string>
 </resources>

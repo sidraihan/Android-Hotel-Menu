@@ -1,7 +1,6 @@
 package com.example.zeeshan.hotelmenuhome;
 
 import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -15,10 +14,6 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.content.Intent;
 import android.widget.LinearLayout;
-import android.widget.Toast;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -50,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
         }
         else if(item.getItemId()== R.id.help) {
             help = new AlertDialog.Builder(this);
-            help.setMessage("This application is a simple UI app used to order the food you want to eat!Just select what you want to eat and click order and we will provide you with delicious food!");
+            help.setMessage(R.string.helpText);
             AlertDialog alert = help.create();
             alert.setTitle("Help");
             alert.show();
@@ -67,8 +62,6 @@ public class MainActivity extends AppCompatActivity {
         try
         {
             SQLiteDatabase hotelDatabase = this.openOrCreateDatabase("Hotel",MODE_PRIVATE,null);
-            //hotelDatabase.execSQL("DELETE FROM menuitems WHERE name='Chicken Tandoori'");
-            //hotelDatabase.execSQL("INSERT INTO menuitems (name,nick, price, description) VALUES ('Chicken Tandoori','chicken_tandoori', 320, 'Prepared on tandoor. This is a traditional Indian dish.')");
 
             //hotelDatabase.execSQL("DROP TABLE menuitems");
             //hotelDatabase.execSQL("CREATE TABLE IF NOT EXISTS orderitems(id INTEGER PRIMARY KEY AUTOINCREMENT,bill INT(5),menuitem_id INTEGER,FOREIGN KEY(menuitem_id) REFERENCES menuitems(id))");
@@ -95,9 +88,7 @@ public class MainActivity extends AppCompatActivity {
             final Cursor c = hotelDatabase.rawQuery("SELECT * FROM menuitems",null);
             final int idIndex = c.getColumnIndex("id");
             int nameIndex = c.getColumnIndex("name");
-            int priceIndex = c.getColumnIndex("price");
             int nickIndex = c.getColumnIndex("nick");
-            int descriptionIndex = c.getColumnIndex("description");
 
             c.moveToFirst();
 
@@ -119,20 +110,6 @@ public class MainActivity extends AppCompatActivity {
                 c.moveToNext();
             }
 
-
-            while(c != null){
-
-                Log.i("name",c.getString(nameIndex));
-                Log.i("nick",c.getString(nickIndex));
-                Log.i("price",Integer.toString(c.getInt(priceIndex)));
-                Log.i("description",c.getString(descriptionIndex));
-                c.moveToNext();
-
-
-            }
-
-
-
         }
 
         catch (Exception e)
@@ -147,63 +124,82 @@ public class MainActivity extends AppCompatActivity {
 
 
             SQLiteDatabase hotelDatabase = this.openOrCreateDatabase("Hotel", MODE_PRIVATE, null);
-           // hotelDatabase.execSQL("DROP TABLE orderitems");
-           // hotelDatabase.execSQL("CREATE TABLE IF NOT EXISTS orderitems(id INTEGER PRIMARY KEY,bill INT(5),menuitem_id INTEGER,FOREIGN KEY(menuitem_id) REFERENCES menuitems(id))");
+            //hotelDatabase.execSQL("DROP TABLE orderitems");
+            //hotelDatabase.execSQL("CREATE TABLE IF NOT EXISTS orderitems(id INTEGER PRIMARY KEY,bill INT(5))");
             //hotelDatabase.execSQL("INSERT INTO menuitems (name,nick, price, description) VALUES ('Chicken Tandoori','chicken_tandoori', 320, 'Prepared on tandoor. This is a traditional Indian dish.')");
-
-            hotelDatabase.execSQL("CREATE TABLE IF NOT EXISTS menu_order(id INTEGER PRIMARY KEY,item_id INTEGER,order_id INTEGER,FOREIGN KEY(item_id) REFERENCES menuitems(id),FOREIGN KEY(order_id) REFERENCES orderitems(id))");
+            //hotelDatabase.execSQL("DROP TABLE menu_order");
+            //hotelDatabase.execSQL("CREATE TABLE IF NOT EXISTS menu_order(id INTEGER PRIMARY KEY,item_id INTEGER,order_id INTEGER,FOREIGN KEY(item_id) REFERENCES menuitems(id),FOREIGN KEY(order_id) REFERENCES orderitems(id))");
 
             Cursor c = hotelDatabase.rawQuery("SELECT * FROM menuitems", null);
             int idIndex = c.getColumnIndex("id");
             int nameIndex = c.getColumnIndex("name");
             int priceIndex = c.getColumnIndex("price");
-            int descriptionIndex = c.getColumnIndex("description");
             int nickIndex = c.getColumnIndex("nick");
             int numRows = hotelDatabase.rawQuery("SELECT id FROM menuitems", null).getCount();
             c.moveToFirst();
             ArrayList<String> al = new ArrayList<>();
             String[] items={};
-            int bill1=0;
+            int bill =0;
             int idorderIndex;
             int billIndex;
-            int numRowsOrder;
+            int orderid=0;
+            int ids[]=new int[100];
+            int no_of_items=0;
 
 
 
-            for (int i=0;i<numRows;i++)
+            for (int i=0,m=0;i<numRows;i++)
             {
                 view2 = (View) view.getParent().getParent();
                 ch = (CheckBox) view2.findViewWithTag(c.getString(nickIndex));
 
                 if (ch.isChecked()) {
                     al.add(c.getString(nameIndex));
-                    bill1+=c.getInt(priceIndex);
-                    numRowsOrder = hotelDatabase.rawQuery("SELECT id FROM orderitems", null).getCount();
-                    numRowsOrder++;
-
-                    hotelDatabase.execSQL("INSERT INTO menu_order VALUES(null,"+c.getString(idIndex)+","+numRowsOrder+")");
-                    int numRowsJoin = hotelDatabase.rawQuery("SELECT id FROM orderitems", null).getCount();
-
-
-                    Cursor c1 = hotelDatabase.rawQuery("SELECT * FROM menu_order", null);
-                    c1.moveToFirst();
-                    idorderIndex = c1.getColumnIndex("item_id");
-                    billIndex = c1.getColumnIndex("order_id");
-                    Log.i("item_id",Integer.toString(c1.getInt(idorderIndex)));
-                    Log.i("order_id",Integer.toString(c1.getInt(billIndex)));
-                    c1.moveToNext();
+                    bill +=c.getInt(priceIndex);
+                    ids[m]=c.getInt(idIndex);
+                    m++;
+                    no_of_items++;
 
                 }
+
 
 
                 c.moveToNext();
             }
 
-           // hotelDatabase.execSQL("INSERT INTO orderitems (items) VALUES ("+items+")");
+            hotelDatabase.execSQL("INSERT INTO orderitems VALUES(null,"+bill+")");
+            orderid = hotelDatabase.rawQuery("SELECT id FROM orderitems", null).getCount();
+
+
+            for (int k=0;k<ids.length;k++)
+            {
+                hotelDatabase.execSQL("INSERT INTO menu_order VALUES(null,"+ids[k]+","+orderid+")");
+            }
+
+            Cursor c2 = hotelDatabase.rawQuery("SELECT * FROM menu_order WHERE order_id="+orderid,null);
+
+            int menu_index = c2.getColumnIndex("item_id");
+            int order_index = c2.getColumnIndex("order_id");
+
+            c2.moveToFirst();
+
+
+            for (int l = 0;l<no_of_items;l++)
+            {
+                Log.i("MenuitemID:",Integer.toString(c2.getInt(menu_index)));
+                Log.i("Order_id:",Integer.toString(c2.getInt(order_index)));
+
+                c2.moveToNext();
+
+            }
+
+
+
 
             Intent intent = new Intent(getApplicationContext(), DisplayOrder.class);
-            intent.putExtra("order",items);
-            intent.putExtra("bill",Integer.toString(bill1));
+            intent.putExtra("order_items",no_of_items);
+            intent.putExtra("bill",Integer.toString(bill));
+            intent.putExtra("order_id",orderid);
             startActivity(intent);
 
 
